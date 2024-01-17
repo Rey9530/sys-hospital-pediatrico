@@ -64,6 +64,24 @@ model hos_emp_employees {
   emp_status               Estado                   @default(ACTIVE)
   emp_date_create          DateTime                 @default(now())
   emp_date_update          DateTime                 @default(now()) @db.Timestamptz()
+
+  hos_des_employee_discounts hos_des_employee_discounts[]
+}
+
+model hos_des_employee_discounts {
+  des_code                String            @id(map: "hos_des_pk") @default(uuid())
+  des_reference           String
+  emp_strat_date          DateTime          @default(now()) @db.Timestamptz()
+  des_number_installments Int               @default(0)
+  des_total_amount        Decimal?          @default(0) @db.Decimal(10, 2)
+  des_codemp              String
+  hos_emp_employees       hos_emp_employees @relation(fields: [des_codemp], references: [emp_code], onDelete: NoAction, onUpdate: NoAction, map: "hos_des_emp_fk")
+  des_status              EstadoDescuento   @default(ACTIVE)
+}
+
+enum EstadoDescuento {
+  ACTIVE
+  CANCELED
 }
 
 model hos_gen_genders {
@@ -92,6 +110,12 @@ model hos_wst_work_status {
   wst_name          String
   wst_status        Estado              @default(ACTIVE)
   hos_emp_employees hos_emp_employees[]
+}
+
+model hos_din_discount_institutions {
+  din_code   String @id(map: "hos_din_pk") @default(uuid())
+  din_name   String
+  din_status Estado @default(ACTIVE)
 }
 
 enum Estado {
