@@ -7,9 +7,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { CreateUserDto, UpdateUserDto } from './dto';
-import { JwtService } from '@nestjs/jwt';
-import { JwtPayload } from '../auth/interfaces';
+import { CreateUserDto, UpdateUserDto } from './dto'; 
 import { PasswordUserDto } from '../auth/dto/password-user.dto';
 import { PrismaService } from 'src/common/services';
 import { hos_usr_usuario } from '@prisma/client';
@@ -17,10 +15,8 @@ import { hos_usr_usuario } from '@prisma/client';
 @Injectable()
 export class UsersService {
   private readonly logger = new Logger('UsersService');
-
   constructor(
-    private readonly prisma: PrismaService,
-    private readonly jwtService: JwtService,
+    private readonly prisma: PrismaService, 
   ) { }
 
   async create(createUserDto: CreateUserDto, user: hos_usr_usuario) {
@@ -90,8 +86,7 @@ export class UsersService {
       where: { usr_code: term, usr_status: 'ACTIVE' },
     });
     if (!resp)
-      throw new NotFoundException(`Usuario con el id ${term} no encontrada`);
-
+      throw new NotFoundException(`Usuario con el id ${term} no encontrada`); 
     return resp;
   }
 
