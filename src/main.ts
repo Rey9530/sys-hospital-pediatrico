@@ -13,7 +13,7 @@ const logger = new Logger('HOSPITAL_PEDIATRICO');
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalFilters(new AllExceptionFilter());
-  app.useGlobalInterceptors(new TransformInterceptor()); 
+  app.useGlobalInterceptors(new TransformInterceptor());
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -51,4 +51,5 @@ async function bootstrap() {
 }
 bootstrap()
   .then(() => logger.log('START API : ' + APP_URL + ':' + PORT))
+  .then(() => logger.log('API DOC START : ' + APP_URL + ':' + PORT + '/api'))
   .catch((error) => logger.error('Error: ', error));
