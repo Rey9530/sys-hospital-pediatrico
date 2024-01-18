@@ -9,14 +9,13 @@ import { hos_usr_usuario } from '@prisma/client';
 @ApiTags('Auth')
 @Controller('v1/auth')
 export class AuthController {
+  
   constructor(private readonly authService: AuthService) { }
-
 
   @Post('login')
   loginUser(@Body() loginUserDto: CreateAuthDto) {
     return this.authService.login(loginUserDto);
-  }
-
+  } 
 
   @Get('check-status')
   @Auth()

@@ -29,7 +29,7 @@ export class AuthService {
         usr_password: true,
         usr_status: true,
         usr_attempts_faile: true,
-      }, //! OJO!
+      }, 
     });
 
     if (!user) throw new UnauthorizedException('Credenciales incorrectas');
@@ -55,9 +55,7 @@ export class AuthService {
     };
 
     return data;
-  }
-
-
+  } 
   async checkStatus(user: hos_usr_usuario) {
     try {
       const userN = await this.prisma.hos_usr_usuario.findFirst({

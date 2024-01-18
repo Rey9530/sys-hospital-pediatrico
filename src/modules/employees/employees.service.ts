@@ -47,10 +47,7 @@ export class EmployeesService {
       var db = await this.prisma.hos_emp_employees.create({
         data
       });
-    } catch (error) {
-      console.log("error=======")
-      console.log(error)
-      console.log("error=======")
+    } catch (error) { 
       throw new InternalServerErrorException(error.response.message)
     }
     return db;
