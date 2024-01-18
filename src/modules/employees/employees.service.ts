@@ -48,13 +48,56 @@ export class EmployeesService {
         data
       });
     } catch (error) {
+      console.log("error=======")
+      console.log(error)
+      console.log("error=======")
       throw new InternalServerErrorException(error.response.message)
     }
     return db;
   }
 
   async findAll() {
-    return this.prisma.hos_emp_employees.findMany({ where: { emp_status: 'ACTIVE' } });
+    return this.prisma.hos_emp_employees.findMany({
+      where: { emp_status: 'ACTIVE' }, include: {
+        hos_emp_employee: {
+          select: {
+            emp_first_name: true,
+            emp_first_surname: true,
+          }
+        },
+        hos_emp_employee_boss: {
+          select: {
+            emp_first_name: true
+          }
+        },
+        hos_gen_genders: {
+          select: {
+            gen_name: true
+          }
+        },
+        hos_jti_job_title: {
+          select: {
+            jti_name: true
+          }
+        },
+        hos_lad_labor_department: {
+          select: {
+            lad_name: true
+          }
+        },
+        hos_wst_work_status: {
+          select: {
+            wst_name: true
+          }
+        },
+        hos_usr_usuario: {
+          select: {
+            usr_names: true,
+            usr_surnames: true
+          }
+        },
+      }
+    });
   }
 
   async findOne(term: string) {
@@ -90,7 +133,6 @@ export class EmployeesService {
     emp_birth_date = convert_date(emp_birth_date);
     emp_admission_date = convert_date(emp_admission_date);
     emp_departure_date = convert_date(emp_departure_date);
-
     const [
       hos_gen_genders,
       hos_lad_labor_department,
