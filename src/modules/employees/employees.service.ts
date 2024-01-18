@@ -47,7 +47,7 @@ export class EmployeesService {
       var db = await this.prisma.hos_emp_employees.create({
         data
       });
-    } catch (error) { 
+    } catch (error) {
       throw new InternalServerErrorException(error.response.message)
     }
     return db;
@@ -55,18 +55,18 @@ export class EmployeesService {
 
   async findAll() {
     return this.prisma.hos_emp_employees.findMany({
-      where: { emp_status: 'ACTIVE' }, include: {
-        hos_emp_employee: {
-          select: {
-            emp_first_name: true,
-            emp_first_surname: true,
-          }
-        },
-        hos_emp_employee_boss: {
-          select: {
-            emp_first_name: true
-          }
-        },
+      where: { emp_status: 'ACTIVE' },
+      select: {
+        emp_code: true,
+        emp_code_employee: true,
+        emp_first_name: true,
+        emp_second_name: true,
+        emp_third_name: true,
+        emp_first_surname: true,
+        emp_second_surname: true,
+        emp_married_surname: true,
+        emp_birth_date: true,
+        emp_cel_phone: true, 
         hos_gen_genders: {
           select: {
             gen_name: true
