@@ -32,8 +32,8 @@ export class CreateEmployeeDto {
   emp_second_name:string;
 
   @ApiProperty({example:'Alfredo'})
-  @IsString()
-  @MinLength(2)
+  @IsString() 
+  @IsOptional() 
   emp_third_name:string;
 
   @ApiProperty({example:'Beltran'})
@@ -47,8 +47,7 @@ export class CreateEmployeeDto {
   emp_second_surname:string;
 
   @ApiProperty({example:'de Martines'})
-  @IsString()
-  @MinLength(2)
+  @IsString() 
   @IsOptional()
   emp_married_surname:string;
 

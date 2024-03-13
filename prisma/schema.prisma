@@ -11,18 +11,19 @@ datasource db {
 }
 
 model hos_usr_usuario {
-  usr_code           String              @id(map: "hos_usr_pk") @default(uuid())
-  usr_code_employe   String
-  usr_names          String
-  usr_surnames       String
-  usr_password       String
-  usr_attempts_faile Int                 @default(0) @db.SmallInt
-  usr_status         Estado              @default(ACTIVE)
-  usr_date_create    DateTime            @default(now())
-  usr_date_update    DateTime            @default(now()) @db.Timestamptz()
-  usr_user_create    String
-  usr_usrer_update   String
-  hos_emp_employees  hos_emp_employees[]
+  usr_code                   String                       @id(map: "hos_usr_pk") @default(uuid())
+  usr_code_employe           String
+  usr_names                  String
+  usr_surnames               String
+  usr_password               String
+  usr_attempts_faile         Int                          @default(0) @db.SmallInt
+  usr_status                 Estado                       @default(ACTIVE)
+  usr_date_create            DateTime                     @default(now())
+  usr_date_update            DateTime                     @default(now()) @db.Timestamptz()
+  usr_user_create            String
+  usr_usrer_update           String
+  hos_emp_employees          hos_emp_employees[]
+  hos_des_employee_discounts hos_des_employee_discounts[]
 }
 
 model hos_emp_employees {
@@ -30,7 +31,7 @@ model hos_emp_employees {
   emp_code_employee          String
   emp_first_name             String
   emp_second_name            String
-  emp_third_name             String
+  emp_third_name             String?
   emp_first_surname          String
   emp_second_surname         String
   emp_married_surname        String?
@@ -69,14 +70,17 @@ model hos_emp_employees {
 
 model hos_des_employee_discounts {
   des_code                      String                        @id(map: "hos_des_pk") @default(uuid())
-  des_reference                 String
-  emp_strat_date                DateTime                      @default(now()) @db.Timestamptz()
-  des_number_installments       Int                           @default(0)
-  des_total_amount              Decimal?                      @default(0) @db.Decimal(10, 2)
-  des_codemp                    String
-  hos_emp_employees             hos_emp_employees             @relation(fields: [des_codemp], references: [emp_code], onDelete: NoAction, onUpdate: NoAction, map: "hos_des_emp_fk")
   des_coddin                    String
   hos_din_discount_institutions hos_din_discount_institutions @relation(fields: [des_coddin], references: [din_code], onDelete: NoAction, onUpdate: NoAction, map: "hos_des_din_fk")
+  des_reference                 String
+  emp_start_date                DateTime                      @default(now()) @db.Timestamptz()
+  emp_end_date                  DateTime                      @default(now()) @db.Timestamptz()
+  des_number_dues               Int                           @default(0)
+  des_amount                    Decimal?                      @default(0) @db.Decimal(10, 2)
+  des_codemp                    String
+  hos_emp_employees             hos_emp_employees             @relation(fields: [des_codemp], references: [emp_code], onDelete: NoAction, onUpdate: NoAction, map: "hos_des_emp_fk")
+  des_codusr                    String
+  hos_usr_usuario               hos_usr_usuario               @relation(fields: [des_codusr], references: [usr_code], onDelete: NoAction, onUpdate: NoAction, map: "hos_des_usr_fk")
   des_status                    EstadoDescuento               @default(ACTIVE)
 }
 

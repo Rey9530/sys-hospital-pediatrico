@@ -6,6 +6,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Auth, GetUser } from '../auth/decorators';
 import { HEADER_API_BEARER_AUTH } from 'src/common/const';
 import { hos_usr_usuario } from '@prisma/client';
+import { CreateDisountDTO } from './dto/create-discount.dto';
 
 @ApiTags('Employees')
 @Controller('v1/employees')
@@ -19,9 +20,18 @@ export class EmployeesController {
     return this.employeesService.create(createEmployeeDto, user);
   }
 
+  @Post("discounts")
+  create_discount(@Body() createEmployeeDto: CreateDisountDTO, @GetUser() user: hos_usr_usuario) {
+    return this.employeesService.create_discount(createEmployeeDto, user);
+  }
+
   @Get()
   findAll() {
     return this.employeesService.findAll();
+  }
+  @Get('get/discountss/:id')
+  findDiscounts(@Param('id', ParseUUIDPipe) id: string) {
+    return this.employeesService.findDiscounts(id);
   }
 
   @Get(':id')
@@ -43,5 +53,10 @@ export class EmployeesController {
   @Delete(':id')
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.employeesService.remove(id);
+  }
+
+  @Delete('discounts/:id')
+  removeDiscounts(@Param('id', ParseUUIDPipe) id: string) {
+    return this.employeesService.removeDiscounts(id);
   }
 }

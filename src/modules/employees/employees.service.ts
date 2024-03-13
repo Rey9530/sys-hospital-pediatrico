@@ -4,6 +4,7 @@ import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { PrismaService } from 'src/common/services';
 import { convert_date } from 'src/common/helpers';
+import { CreateDisountDTO } from './dto/create-discount.dto';
 
 @Injectable()
 export class EmployeesService {
@@ -11,10 +12,12 @@ export class EmployeesService {
     private readonly prisma: PrismaService,
   ) { }
   async create(createEmployeeDto: CreateEmployeeDto, hos_usr_usuario: hos_usr_usuario) {
-    var { emp_birth_date, emp_admission_date, emp_departure_date, ...respto }: any = createEmployeeDto;
+    let { emp_birth_date, emp_admission_date, emp_departure_date, ...respto }: any = createEmployeeDto;
+
     emp_birth_date = convert_date(emp_birth_date);
     emp_admission_date = convert_date(emp_admission_date);
     emp_departure_date = convert_date(emp_departure_date);
+
 
     const [
       hos_gen_genders,
@@ -48,9 +51,33 @@ export class EmployeesService {
         data
       });
     } catch (error) {
+      console.log(error)
       throw new InternalServerErrorException(error.response.message)
     }
     return db;
+  }
+  async create_discount(createDisountDTO: CreateDisountDTO, hos_usr_usuario: hos_usr_usuario) {
+    let { emp_start_date, emp_end_date, ...respto }: any = createDisountDTO;
+
+    emp_start_date = convert_date(emp_start_date);
+    emp_end_date = convert_date(emp_end_date);
+
+
+    const boss = await this.prisma.hos_emp_employees.findFirst({ where: { emp_code: respto.des_codemp } })
+    if (!boss) throw new NotFoundException('El empleado no es valido');
+    try {
+      const db = await this.prisma.hos_des_employee_discounts.create({
+        data: {
+          emp_start_date,
+          emp_end_date,
+          ...respto,
+          des_codusr: hos_usr_usuario.usr_code
+        }
+      });
+      return db;
+    } catch (error) {
+      throw new InternalServerErrorException(error.response.message)
+    }
   }
 
   async findAll() {
@@ -66,7 +93,7 @@ export class EmployeesService {
         emp_second_surname: true,
         emp_married_surname: true,
         emp_birth_date: true,
-        emp_cel_phone: true, 
+        emp_cel_phone: true,
         hos_gen_genders: {
           select: {
             gen_name: true
@@ -105,23 +132,36 @@ export class EmployeesService {
       throw new NotFoundException(`Empleado con el id ${term} no encontrada`);
     return resp;
   }
+
+  async findDiscounts(des_codemp: string) {
+    let resp = await this.prisma.hos_des_employee_discounts.findMany({
+      where: { des_codemp, des_status: 'ACTIVE' },
+      include: { hos_din_discount_institutions: true }
+    });
+    if (!resp)
+      throw new NotFoundException(`Empleado con el id ${des_codemp} no encontrada`);
+    return resp;
+  }
   async getCatalogs() {
     const [
       hos_gen_genders,
       hos_lad_labor_department,
       hos_jti_job_title,
       hos_wst_work_status,
+      hos_din_discount_institutions,
     ] = await Promise.all([
       await this.prisma.hos_gen_genders.findMany({ where: { gen_status: 'ACTIVE' } }),
       await this.prisma.hos_lad_labor_department.findMany({ where: { lad_status: 'ACTIVE' } }),
       await this.prisma.hos_jti_job_title.findMany({ where: { jti_status: 'ACTIVE' } }),
       await this.prisma.hos_wst_work_status.findMany({ where: { wst_status: 'ACTIVE' } }),
+      await this.prisma.hos_din_discount_institutions.findMany({ where: { din_status: 'ACTIVE' } }),
     ]);
     return {
       hos_gen_genders,
       hos_lad_labor_department,
       hos_jti_job_title,
-      hos_wst_work_status
+      hos_wst_work_status,
+      hos_din_discount_institutions,
     };
   }
   async update(id: string, updateEmployeeDto: UpdateEmployeeDto, hos_usr_usuario: hos_usr_usuario) {
@@ -153,7 +193,9 @@ export class EmployeesService {
     delete respto.emp_codempboss;
     try {
       var data = {
-        emp_birth_date, emp_admission_date, emp_departure_date,
+        emp_birth_date,
+        emp_admission_date,
+        emp_departure_date,
         ...respto,
         emp_codusr: hos_usr_usuario.usr_code,
         emp_codempboss: boss != null ? boss.emp_code : null
@@ -175,6 +217,17 @@ export class EmployeesService {
     await this.prisma.hos_emp_employees.update({
       where: { emp_code: resp.emp_code },
       data: { emp_status: 'INACTIVE' },
+    });
+  }
+  async removeDiscounts(id: string) {
+    let resp = await this.prisma.hos_des_employee_discounts.findFirst({
+      where: { des_code: id, des_status: 'ACTIVE' },
+    });
+    if (!resp)
+      throw new NotFoundException(`Descuento con el id ${id} no encontrado`);
+    await this.prisma.hos_des_employee_discounts.update({
+      where: { des_code: id, des_status: 'ACTIVE' },
+      data: { des_status: 'CANCELED' },
     });
   }
 }
