@@ -63,6 +63,16 @@ export class PlanillasService {
       }
     });
   }
+  async getCatalogs() {
+    const paymentsType = await this.paymentType();
+    const mounts = await this.paymentMonth();
+    const employes = await this.prisma.hos_emp_employees.findMany({
+      where: { emp_status: 'ACTIVE' }, include: {
+        hos_des_employee_discounts: { include: { hos_din_discount_institutions: true } }
+      }
+    });
+    return { paymentsType, mounts, employes }
+  }
   paymentMonth() {
     return [
       {

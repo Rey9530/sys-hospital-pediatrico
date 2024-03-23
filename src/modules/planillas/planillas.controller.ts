@@ -35,6 +35,11 @@ export class PlanillasController {
     return this.planillasService.paymentType();
   }
 
+  @Get('get/catalogs')
+  getCatalogs() {
+    return this.planillasService.getCatalogs();
+  }
+
   @Get('get/payment-month')
   paymentMonth() {
     return this.planillasService.paymentMonth();
