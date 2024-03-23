@@ -24,6 +24,7 @@ model hos_usr_usuario {
   usr_usrer_update           String
   hos_emp_employees          hos_emp_employees[]
   hos_des_employee_discounts hos_des_employee_discounts[]
+  hos_pla_planillas          hos_pla_planillas[]
 }
 
 model hos_emp_employees {
@@ -122,6 +123,29 @@ model hos_wst_work_status {
   wst_name          String
   wst_status        Estado              @default(ACTIVE)
   hos_emp_employees hos_emp_employees[]
+}
+
+model hos_pla_planillas {
+  pla_code             String                @id(map: "hos_pla_pk") @default(uuid())
+  pla_name             String?
+  pla_days_works       String?
+  pla_period           String? // este es el mes
+  pla_payment_type     String? // este es periodo de pago quincenal o mensual 
+  pla_date_start       DateTime?
+  pla_date_end         DateTime?
+  pla_date_create      DateTime?             @default(now())
+  pla_date_update      DateTime?             @default(now()) @db.Timestamptz()
+  pla_status           Estado                @default(ACTIVE)
+  hos_pmt_payment_type hos_pmt_payment_type? @relation(fields: [pla_payment_type], references: [pmt_code])
+  pla_codusr           String?
+  hos_usr_usuario      hos_usr_usuario?      @relation(fields: [pla_codusr], references: [usr_code], onDelete: NoAction, onUpdate: NoAction, map: "hos_pla_usr_fk")
+}
+
+model hos_pmt_payment_type {
+  pmt_code          String              @id() @default(uuid())
+  pmt_name          String
+  pmt_status        Estado              @default(ACTIVE)
+  hos_pla_planillas hos_pla_planillas[]
 }
 
 enum Estado {

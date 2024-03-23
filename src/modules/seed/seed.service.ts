@@ -6,7 +6,7 @@ import * as bcrypt from 'bcrypt';
 export class SeedService {
   private readonly logger = new Logger('UsersService');
 
-  constructor(private readonly prisma: PrismaService) { } 
+  constructor(private readonly prisma: PrismaService) { }
 
   async obtenerNombresDeTablas(prisma) {
     // Esta consulta obtiene los nombres de todas las tablas públicas que no son del sistema
@@ -72,6 +72,12 @@ export class SeedService {
           { wst_name: 'Estado 1', },
           { wst_name: 'Estado 2', },
           { wst_name: 'Estado 3', },
+        ]
+      });
+      await this.prisma.hos_pmt_payment_type.createMany({
+        data: [
+          { pmt_name: 'Quincenal', },
+          { pmt_name: 'Mensual', },
         ]
       });
 
